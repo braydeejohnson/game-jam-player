@@ -1,4 +1,5 @@
 # game-jam-player
+![image](https://user-images.githubusercontent.com/6641710/84950435-c2a56b00-b0a3-11ea-971f-86da45af1192.png)
 This is an example project for a game jam player using [Electron](https://www.electronjs.org/), [Vuejs](https://vuejs.org/), and [Tailwindcss](https://tailwindcss.com/)
 
 The target of this example was to demonstrate the simple setup of an electron project and use common Nodejs packages to create the target list of needs for the player.
