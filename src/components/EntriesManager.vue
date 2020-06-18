@@ -105,7 +105,15 @@
             <p class="py-4">No Readme found.</p>
           </div>
           <div class="px-4 row-span-1 flex flex-col justify-end items-end pb-4">
-            <button class="w-full px-4 py-2 bg-green-500 text-gray-100 rounded" @click="launch(selected)">Launch</button>
+            <button
+                    class="w-full px-4 py-2  text-gray-100 rounded flex flex-row justify-center items-center"
+                    :disabled="playing !== null"
+                    v-bind:class="[playing !== null ? 'bg-gray-600' : 'bg-green-500']"
+                    @click="launch(selected)"
+            >
+              {{ selected === playing ? "Playing": (playing ? "Another game is running" : "Launch") }}
+              <span v-show="playing === null"><svg class="pl-2 h-8 w-8 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"/></svg></span>
+            </button>
           </div>
         </div>
       </div>
@@ -124,6 +132,7 @@ export default {
   },
   data(){
     return {
+      playing: null,
       search: '',
       sortMethod: 1,
       sortDirection: -1,
@@ -142,6 +151,9 @@ export default {
       }
     }
   },
+  created(){
+    console.log("Ready")
+  },
   methods:{
     startDrag: (evt, entry) => {
       evt.dataTransfer.dropEffect = 'move'
@@ -149,9 +161,13 @@ export default {
       evt.dataTransfer.setData('entry', entry.name)
     },
     launch: function(entry){
-      if(entry.bin){
-        window.ipcRenderer.sendSync('launch', entry.bin)
+      if(this.playing === null && entry.bin){
+        this.playing = entry
         entry.played = true
+        window.ipcRenderer.invoke('launch', entry.bin).then((result) => {
+          console.log(result)
+          this.playing = null
+        })
       }
     },
     sortAlphabetical: function(a, b){

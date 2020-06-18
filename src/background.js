@@ -6,7 +6,7 @@ import {
   /* installVueDevtools */
 } from 'vue-cli-plugin-electron-builder/lib'
 import fs from 'fs'
-import { execFile } from 'child_process'
+import { spawn } from 'child_process'
 import path from 'path'
 import walkdir from 'walkdir';
 
@@ -18,17 +18,16 @@ ipcMain.on('synchronous-message', (event, arg) => {
   event.returnValue = Entries
 })
 
-ipcMain.on('launch', (event, binary) => {
+ipcMain.handle('launch', async (event, binary) => {
   console.log("Message", binary)
-  let child = execFile(binary, (err, data) => {
-    if(err){
-      console.error(err)
-      return;
-    }
+  let child = await spawn(binary)
 
-    console.log(data.toString())
-  })
-  event.returnValue = true
+  //Console log output from the child process until game exits
+  for await(const data of child.stdout) {
+    console.log(`stdout from child process: ${data}`)
+  }
+
+  return true
 })
 
 function scanEntries() {
